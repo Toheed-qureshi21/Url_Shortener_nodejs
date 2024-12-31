@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Url Shortener App</h1>
+        <form id="form-container">
+            <div>
+                <label for="url">Enter the Url</label>
+                <input type="text" name="url" id="url" />
+            </div>
+            <div>
+                <label for="short-url">Enter the short url</label>
+                <input type="text" name="short-url" id="short-url" />
+            </div>
+            <button type="submit">Short</button>
+        </form>
+        <h2>Shorten url</h2>
+        <ul id="shortened_url"> </ul>
+    </div>
+
+    <script>
+        const fetchLinks = async () => {
+            const response = await fetch("/links");
+            const links = await response.json();
+
+            const list = document.getElementById("shortened_url");
+            list.innerHTML = "";
+            for (const [short_url, url] of Object.entries(links)) {
+            const li = document.createElement("li");
+            const truncatedurl = url.length >30?`${url.slice(0,30)}...`:url;
+            li.innerHTML = `<a href="/${short_url}" target="_blank">
+            ${location.origin}/${short_url} </a> <br>
+                    -> ${url}`;
+            list.appendChild(li);
+            }
+        }
+
+        const form_container = document.getElementById("form-container");
+        form_container.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const url = formData.get("url")
+            const short_url = formData.get("short-url");
+            console.log(url, short_url);
+            try {
+                const response = await fetch("http://localhost:3000/shorten", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url, short_url })
+                });
+
+                if (response.ok) {
+                    alert("Form submitted successfully");
+                    e.target.reset();
+                    fetchLinks();
+                } else {
+                    alert(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                
+            } catch (error) {
+                alert("Don't write existing short_url ");
+            }
+        })
+
+        fetchLinks();
+
+    </script>
+</body>
+
+</html>
