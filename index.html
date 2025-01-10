@@ -56,10 +56,10 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ url, short_url })
                 });
-
+;
                 if (response.ok) {
                     alert("Form submitted successfully");
-                    e.target.reset();
+                    e.target.reset()
                     fetchLinks();
                 } else {
                     alert(`Error: ${response.status} - ${response.statusText}`);
